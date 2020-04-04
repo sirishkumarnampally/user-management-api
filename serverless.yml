@@ -1,0 +1,55 @@
+org: sirishkumarnampally
+app: basic-user-management
+
+service: sls
+
+custom:
+  settings:
+    USERS_TABLE: users
+
+provider:
+  name: aws
+  runtime: nodejs10.x
+  environment: ${self:custom.settings}
+  region: ap-southeast-2
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action: 
+        - dynamodb:DescribeTable
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.settings.USERS_TABLE}"
+
+functions:
+  createUser:
+    handler: handler.createUser
+    events:
+    - http:
+        path: /user
+        method: post
+  getUsers:
+    handler: handler.getUsers
+    events:
+    - http:
+        path: /users
+        method: get
+
+resources:
+  Resources:
+    UsersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+        - AttributeName: "userName"
+          AttributeType: "S"
+        KeySchema:
+        - AttributeName: "userName"
+          KeyType: "HASH"
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:custom.settings.USERS_TABLE}
