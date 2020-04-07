@@ -30,13 +30,36 @@ functions:
     events:
     - http:
         path: /user
-        method: post
+        method: put
+        cors: true
   getUsers:
     handler: handler.getUsers
     events:
     - http:
         path: /users
         method: get
+        cors: true
+  getUser:
+    handler: handler.getUser
+    events:
+    - http:
+        path: /user/{userName}
+        method: get
+        cors: true
+  updateUser:
+    handler: handler.updateUser
+    events:
+    - http:
+        path: /user/{userName}
+        method: put
+        cors: true
+  deleteUser:
+    handler: handler.deleteUser
+    events:
+    - http:
+        path: /user/{userName}
+        method: delete
+        cors: true            
 
 resources:
   Resources:
